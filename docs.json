@@ -7,17 +7,40 @@
     "light": "#e05560",
     "dark": "#b02a32"
   },
+  "appearance": {
+    "default": "dark",
+    "decorations": {
+      "background": "grid"
+    }
+  },
+  "background": {
+    "decoration": "windows",
+    "color": {
+      "dark": "#060606"
+  }
+  },
+  "styling": {
+  "codeblocks": {
+    "theme": {
+      "dark": "tokyo-night",
+      "light": "github-light"
+    }
+  }
+},
 "favicon": {
-  "light": "/logo/dark.svg",
-  "dark": "/logo/light.svg"
+  "light": "/logo/light.svg",
+  "dark": "/logo/dark.svg"
 },
   "custom": {
   "css": "/custom.css"
   },
   "seo": {
   "indexHiddenPages": false
+  },
+  "fonts": {
+  "body": { "family": "JetBrains Mono" },
+  "heading": { "family": "JetBrains Mono" }
 },
-  "name": "Dudji's Docs",
   "navigation": {
     "tabs": [
       {
@@ -147,19 +170,19 @@
     {
       "header": "Hackbook",
       "items": [
-        { "label": "Playbook", "href": "/docs/playbook" },
-        { "label": "Attacks", "href": "/docs/attacks" },
-        { "label": "Tech", "href": "/docs/tech" },
-        { "label": "Payloads", "href": "/docs/payload" },
-        { "label": "Tools", "href": "/docs/tools" }
+        { "label": "Playbook", "href": "/docs/hackbook/playbook" },
+        { "label": "Attacks", "href": "/docs/hackbook/attacks" },
+        { "label": "Tech", "href": "/docs/hackbook/tech" },
+        { "label": "Payloads", "href": "/docs/hackbook/payload" },
+        { "label": "Tools", "href": "/docs/hackbook/tools" }
       ]
     },
     {
       "header": "Writeups",
       "items": [
-        { "label": "Machines", "href": "/docs/writeups" },
-        { "label": "Challenges", "href": "/docs/writeups" },
-        { "label": "CTFs", "href": "/docs/writeups" }
+        { "label": "Machines", "href": "/docs/writeups/machines" },
+        { "label": "Challenges", "href": "/docs/writeups/challenges" },
+        { "label": "CTFs", "href": "/docs/writeups/ctfs" }
       ]
     }
   ],

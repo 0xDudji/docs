@@ -1,0 +1,10 @@
+a[href*="mintlify"] {
+  display: none !important;
+}
+
+body, [data-theme="dark"] {
+  background-color: #060606 !important;
+  background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px) !important;
+  background-size: 40px 40px !important;
+}

@@ -3,9 +3,9 @@
   "theme": "linden",
   "name": "Hackbook",
   "colors": {
-    "primary": "#DC2626",
-    "light": "#EF4444",
-    "dark": "#B91C1C"
+    "primary": "#d5363e",
+    "light": "#e05560",
+    "dark": "#b02a32"
   },
   "favicon": "/favicon.svg",
   "appearance": {
@@ -128,29 +128,39 @@
       "href": "/writeups"
     }
   },
-  "footer": {
+"footer": {
   "links": [
     {
-      "header": "Hackbook",
+      "header": "Dudji",
       "items": [
-        { "label": "Playbook", "href": "/playbook" },
-        { "label": "Attacks", "href": "/attacks" },
-        { "label": "Tech", "href": "/tech" },
-        { "label": "Payload", "href": "/payload" },
-        { "label": "Tools", "href": "/tools" }
+        { "label": "Home", "href": "https://dudji.com" },
+        { "label": "Contact", "href": "https://dudji.com/contact" }
       ]
     },
     {
-      "header": "Bleedingbyte",
+      "header": "Hackbook",
       "items": [
-        { "label": "Writeups", "href": "/writeups" },
-        { "label": "GitHub", "href": "https://github.com/0xDudji" }
+        { "label": "Playbook", "href": "/docs/playbook" },
+        { "label": "Attacks", "href": "/docs/attacks" },
+        { "label": "Tech", "href": "/docs/tech" },
+        { "label": "Payloads", "href": "/docs/payload" },
+        { "label": "Tools", "href": "/docs/tools" }
+      ]
+    },
+    {
+      "header": "Writeups",
+      "items": [
+        { "label": "Machines", "href": "/docs/writeups" },
+        { "label": "Challenges", "href": "/docs/writeups" },
+        { "label": "CTFs", "href": "/docs/writeups" }
       ]
     }
   ],
   "socials": {
-    "github": "https://github.com/0xDudji",
-    "x": "https://x.com/0xDudji"
+    "x": "https://x.com/dudji",
+    "linkedin": "https://linkedin.com/in/dudji",
+    "instagram": "https://instagram.com/dudji",
+    "github": "https://github.com/0xDudji"
   }
 }
 }

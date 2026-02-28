@@ -1,4 +1,18 @@
-a[href*="mintlify"] {
+a[href*='mintlify'] {
   display: none !important;
 }
 
+/* Hide left sidebar ONLY when homepage wrapper exists */
+body:has(.homepage) #sidebar,
+body:has(.homepage) #sidebar-content {
+  display: none !important;
+}
+
+#navbar :is(a, button)[href^='/docs/writeups'] {
+  background: rgb(var(--primary)) !important;
+  color: #fff !important;
+  padding: 6px 14px !important;
+  border-radius: 999px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+}

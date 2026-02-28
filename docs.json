@@ -41,6 +41,9 @@
     "body": { "family": "JetBrains Mono" },
     "heading": { "family": "JetBrains Mono" }
   },
+  "routing": {
+    "prefix": "/docs"
+  },
   "navigation": {
     "tabs": [
       {
@@ -125,7 +128,7 @@
         ]
       },
       {
-        "tab": "Payload",
+        "tab": "Payloads",
         "groups": [
           {
             "group": "Overview",
@@ -141,6 +144,23 @@
             "pages": ["tools/index"]
           }
         ]
+      },
+      {
+        "tab": "Writeups",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": ["writeups/index"]
+          },
+          {
+            "group": "Categories",
+            "pages": [
+              "writeups/machines/index",
+              "writeups/Challenges/index",
+              "writeups/CTFs/index"
+            ]
+          }
+        ]
       }
     ],
     "global": {
@@ -149,14 +169,8 @@
   },
   "logo": {
     "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
-  },
-  "navbar": {
-    "primary": {
-      "type": "button",
-      "label": "Writeups",
-      "href": "/writeups"
-    }
+    "dark": "/logo/dark.svg",
+    "href": "https://dudji.com"
   },
   "footer": {
     "links": [
@@ -170,11 +184,11 @@
       {
         "header": "Hackbook",
         "items": [
-          { "label": "Playbook", "href": "/docs/hackbook/playbook" },
-          { "label": "Attacks", "href": "/docs/hackbook/attacks" },
-          { "label": "Tech", "href": "/docs/hackbook/tech" },
-          { "label": "Payloads", "href": "/docs/hackbook/payload" },
-          { "label": "Tools", "href": "/docs/hackbook/tools" }
+          { "label": "Playbook", "href": "/docs/playbook" },
+          { "label": "Attacks", "href": "/docs/attacks" },
+          { "label": "Tech", "href": "/docs/tech" },
+          { "label": "Payloads", "href": "/docs/payload" },
+          { "label": "Tools", "href": "/docs/tools" }
         ]
       },
       {

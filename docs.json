@@ -102,7 +102,14 @@
             "root": "attacks/web/index",
             "pages": [
               "attacks/web/local-file-inclusion",
-              "attacks/web/sql-injection"
+              {
+                "group": "SQL Injection",
+                "root": "attacks/web/sql-injection",
+                "pages": [
+                  "attacks/web/sql-injection/sql-injection-union-attacks",
+                  "attacks/web/sql-injection/blind-sql-injection"
+                ]
+              }
             ]
           },
           {

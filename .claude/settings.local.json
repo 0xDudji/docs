@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:mintlify.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:dudji.gitbook.io)",
+      "Bash(python3 -c \"import bs4; print\\(''BeautifulSoup available''\\)\")",
+      "Bash(pip install beautifulsoup4 -q)",
+      "Bash(python3 -c \"import bs4; print\\(''OK''\\)\")",
+      "Bash(python3:*)",
+      "Bash(python -c \":*)"
+    ]
+  }
+}

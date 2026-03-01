@@ -57,51 +57,58 @@
       },
       {
         "tab": "Playbook",
+        "url": "playbook/index",
         "groups": [
           {
-            "group": "Overview",
-            "pages": ["playbook/index"]
+            "group": "Playbook",
+            "root": "playbook/index",
+            "pages": []
           },
           {
             "group": "Recon",
-            "pages": ["playbook/recon/index"]
+            "root": "playbook/recon/index",
+            "pages": []
           },
           {
             "group": "Enumeration",
+            "root": "playbook/enumeration/index",
             "pages": [
-              "playbook/enumeration/index",
               "playbook/enumeration/web-enumeration"
             ]
           },
           {
             "group": "Exploitation",
-            "pages": ["playbook/exploitation/index"]
+            "root": "playbook/exploitation/index",
+            "pages": []
           },
           {
             "group": "Post-Exploitation",
-            "pages": ["playbook/post-exploitation/index"]
+            "root": "playbook/post-exploitation/index",
+            "pages": []
           }
         ]
       },
       {
         "tab": "Attacks",
+        "url": "attacks/index",
         "groups": [
           {
-            "group": "Overview",
-            "pages": ["attacks/index"]
+            "group": "Attacks",
+            "root": "attacks/index",
+            "pages": []
           },
           {
             "group": "Web",
+            "root": "attacks/web/index",
             "pages": [
-              "attacks/web/index",
               "attacks/web/local-file-inclusion",
               "attacks/web/sql-injection"
             ]
           },
           {
             "group": "Privilege Escalation",
+            "root": "attacks/privilege-escalation/index",
             "pages": [
-              "attacks/privilege-escalation/index",
               "attacks/privilege-escalation/linux",
               "attacks/privilege-escalation/windows"
             ]
@@ -110,15 +117,17 @@
       },
       {
         "tab": "Tech",
+        "url": "tech/index",
         "groups": [
           {
-            "group": "Overview",
-            "pages": ["tech/index"]
+            "group": "Tech",
+            "root": "tech/index",
+            "pages": []
           },
           {
             "group": "Linux",
+            "root": "tech/linux/index",
             "pages": [
-              "tech/linux/index",
               "tech/linux/system-fundamentals",
               "tech/linux/authentication-authorization",
               "tech/linux/system-services",
@@ -129,36 +138,80 @@
       },
       {
         "tab": "Payloads",
+        "url": "payload/index",
         "groups": [
           {
-            "group": "Overview",
-            "pages": ["payload/index"]
+            "group": "Payloads",
+            "root": "payload/index",
+            "pages": [
+              "payload/reverse-shells",
+              "payload/web-shells",
+              "payload/file-transfers"
+            ]
           }
         ]
       },
       {
         "tab": "Tools",
+        "url": "tools/index",
         "groups": [
           {
-            "group": "Overview",
-            "pages": ["tools/index"]
+            "group": "Tools",
+            "root": "tools/index",
+            "pages": [
+              "tools/nmap",
+              "tools/burp-suite",
+              "tools/metasploit"
+            ]
           }
         ]
       },
       {
         "tab": "Writeups",
+        "url": "writeups/index",
         "groups": [
           {
-            "group": "Overview",
-            "pages": ["writeups/index"]
+            "group": "Writeups",
+            "root": "writeups/index",
+            "pages": []
           },
           {
-            "group": "Categories",
+            "group": "Machines",
+            "root": "writeups/machines/index",
             "pages": [
-              "writeups/machines/index",
-              "writeups/Challenges/index",
-              "writeups/CTFs/index"
+              {
+                "group": "HTB - Seasonal",
+                "root": "writeups/machines/HTB-Seasonal/index",
+                "pages": [
+                  {
+                    "group": "Season 10",
+                    "root": "writeups/machines/HTB-Seasonal/Season-10/index",
+                    "pages": [
+                      {
+                        "group": "Interpreter",
+                        "root": "writeups/machines/HTB-Seasonal/Season-10/interpreter",
+                        "pages": [
+                          "writeups/machines/HTB-Seasonal/Season-10/interpreter/enumeration",
+                          "writeups/machines/HTB-Seasonal/Season-10/interpreter/foothold",
+                          "writeups/machines/HTB-Seasonal/Season-10/interpreter/lateral-movement",
+                          "writeups/machines/HTB-Seasonal/Season-10/interpreter/privilege-escalation"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
             ]
+          },
+          {
+            "group": "Challenges",
+            "root": "writeups/Challenges/index",
+            "pages": []
+          },
+          {
+            "group": "CTFs",
+            "root": "writeups/CTFs/index",
+            "pages": []
           }
         ]
       }

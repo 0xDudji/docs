@@ -145,15 +145,15 @@
       },
       {
         "tab": "Payloads",
-        "url": "payload/index",
+        "url": "payloads/index",
         "groups": [
           {
             "group": "Payloads",
-            "root": "payload/index",
+            "root": "payloads/index",
             "pages": [
-              "payload/reverse-shells",
-              "payload/web-shells",
-              "payload/file-transfers"
+              "payloads/reverse-shells",
+              "payloads/web-shells",
+              "payloads/file-transfers"
             ]
           }
         ]
@@ -247,7 +247,7 @@
           { "label": "Playbook", "href": "/docs/playbook" },
           { "label": "Attacks", "href": "/docs/attacks" },
           { "label": "Tech", "href": "/docs/tech" },
-          { "label": "Payloads", "href": "/docs/payload" },
+          { "label": "Payloads", "href": "/docs/payloads" },
           { "label": "Tools", "href": "/docs/tools" }
         ]
       },

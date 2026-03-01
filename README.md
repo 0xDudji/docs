@@ -1,6 +1,6 @@
 # Dudji's Hackbook
 
-Personal cybersecurity documentation built with [Mintlify](https://mintlify.com). Covers attack techniques, tooling, and machine writeups.
+Personal cybersecurity documentation. Covers attack techniques, tooling, and machine writeups.
 
 ## Structure
 

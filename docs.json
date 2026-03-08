@@ -3,9 +3,9 @@
   "theme": "linden",
   "name": "Dudji's Docs",
   "colors": {
-    "primary": "#d5363e",
-    "light": "#e05560",
-    "dark": "#b02a32"
+    "primary": "#a855f7",
+    "light": "#c084fc",
+    "dark": "#7e22ce"
   },
   "appearance": {
     "default": "dark",
@@ -14,9 +14,9 @@
     }
   },
   "background": {
-    "decoration": "windows",
+    "decoration": "grid",
     "color": {
-      "dark": "#060606"
+      "dark": "#000000"
     }
   },
   "styling": {
@@ -41,186 +41,60 @@
     "body": { "family": "JetBrains Mono" },
     "heading": { "family": "JetBrains Mono" }
   },
-  "routing": {
-    "prefix": "/docs"
+  "navbar": {
+    "primary": {
+      "type": "button",
+      "label": "Home",
+      "href": "https://Dudji.com"
+    }
   },
   "navigation": {
     "tabs": [
       {
-        "tab": "Home",
+        "tab": "Overview",
         "groups": [
           {
-            "group": "Home",
+            "group": "Overview",
             "pages": ["index"]
           }
         ]
       },
       {
-        "tab": "Playbook",
-        "url": "playbook/index",
+        "tab": "Books",
+        "url": "academy/books/index",
         "groups": [
           {
-            "group": "Playbook",
-            "root": "playbook/index",
-            "pages": []
+            "group": "Overview",
+            "pages": ["academy/books/index"]
           },
           {
-            "group": "Recon",
-            "root": "playbook/recon/index",
-            "pages": []
-          },
-          {
-            "group": "Enumeration",
-            "root": "playbook/enumeration/index",
+            "group": "Progress",
+            "root": "academy/books/index",
             "pages": [
-              "playbook/enumeration/web-enumeration"
-            ]
-          },
-          {
-            "group": "Exploitation",
-            "root": "playbook/exploitation/index",
-            "pages": []
-          },
-          {
-            "group": "Post-Exploitation",
-            "root": "playbook/post-exploitation/index",
-            "pages": []
-          }
-        ]
-      },
-      {
-        "tab": "Attacks",
-        "url": "attacks/index",
-        "groups": [
-          {
-            "group": "Attacks",
-            "root": "attacks/index",
-            "pages": []
-          },
-          {
-            "group": "Web",
-            "root": "attacks/web/index",
-            "pages": [
-              "attacks/web/local-file-inclusion",
-              {
-                "group": "SQL Injection",
-                "root": "attacks/web/sql-injection",
-                "pages": [
-                  "attacks/web/sql-injection/sql-injection-union-attacks",
-                  "attacks/web/sql-injection/blind-sql-injection"
-                ]
-              }
-            ]
-          },
-          {
-            "group": "Privilege Escalation",
-            "root": "attacks/privilege-escalation/index",
-            "pages": [
-              "attacks/privilege-escalation/linux",
-              "attacks/privilege-escalation/windows"
+              "academy/books/currently-reading",
+              "academy/books/completed"
             ]
           }
         ]
       },
       {
-        "tab": "Tech",
-        "url": "tech/index",
+        "tab": "Certifications",
+        "url": "academy/certifications/index",
         "groups": [
           {
-            "group": "Tech",
-            "root": "tech/index",
-            "pages": []
-          },
-          {
-            "group": "Linux",
-            "root": "tech/linux/index",
+            "group": "Certifications",
+            "root": "academy/certifications/index",
             "pages": [
-              "tech/linux/system-fundamentals",
-              "tech/linux/authentication-authorization",
-              "tech/linux/system-services",
-              "tech/linux/storage-devices"
+              "academy/certifications/in-progress",
+              "academy/certifications/achieved"
             ]
           }
         ]
       },
       {
-        "tab": "Payloads",
-        "url": "payloads/index",
-        "groups": [
-          {
-            "group": "Payloads",
-            "root": "payloads/index",
-            "pages": [
-              "payloads/reverse-shells",
-              "payloads/web-shells",
-              "payloads/file-transfers"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Tools",
-        "url": "tools/index",
-        "groups": [
-          {
-            "group": "Tools",
-            "root": "tools/index",
-            "pages": [
-              "tools/nmap",
-              "tools/burp-suite",
-              "tools/metasploit"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Writeups",
-        "url": "writeups/index",
-        "groups": [
-          {
-            "group": "Writeups",
-            "root": "writeups/index",
-            "pages": []
-          },
-          {
-            "group": "Machines",
-            "root": "writeups/machines/index",
-            "pages": [
-              {
-                "group": "HTB - Seasonal",
-                "root": "writeups/machines/HTB-Seasonal/index",
-                "pages": [
-                  {
-                    "group": "Season 10",
-                    "root": "writeups/machines/HTB-Seasonal/Season-10/index",
-                    "pages": [
-                      {
-                        "group": "Interpreter",
-                        "root": "writeups/machines/HTB-Seasonal/Season-10/interpreter",
-                        "pages": [
-                          "writeups/machines/HTB-Seasonal/Season-10/interpreter/enumeration",
-                          "writeups/machines/HTB-Seasonal/Season-10/interpreter/foothold",
-                          "writeups/machines/HTB-Seasonal/Season-10/interpreter/lateral-movement",
-                          "writeups/machines/HTB-Seasonal/Season-10/interpreter/privilege-escalation"
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "group": "Challenges",
-            "root": "writeups/Challenges/index",
-            "pages": []
-          },
-          {
-            "group": "CTFs",
-            "root": "writeups/CTFs/index",
-            "pages": []
-          }
-        ]
+        "tab": "Credly",
+        "href": "https://www.credly.com/users/dudji/badges#credly",
+        "groups": []
       }
     ],
     "global": {
@@ -237,26 +111,40 @@
       {
         "header": "Dudji",
         "items": [
-          { "label": "Home", "href": "https://dudji.com" },
-          { "label": "Contact", "href": "https://dudji.com/contact" }
+          { "label": "Home", "href": "https://Dudji.com" },
+          { "label": "Contact", "href": "https://Dudji.com/contact" },
+          { "label": "Hackbook", "href": "https://Hackbook.Dudji.com" },
+          { "label": "Writeups", "href": "https://Writeups.Dudji.com" },
+          {
+            "label": "Credly",
+            "href": "https://www.credly.com/users/dudji/badges#credly"
+          }
         ]
       },
       {
-        "header": "Hackbook",
+        "header": "Books",
         "items": [
-          { "label": "Playbook", "href": "/docs/playbook" },
-          { "label": "Attacks", "href": "/docs/attacks" },
-          { "label": "Tech", "href": "/docs/tech" },
-          { "label": "Payloads", "href": "/docs/payloads" },
-          { "label": "Tools", "href": "/docs/tools" }
+          {
+            "label": "Currently Reading",
+            "href": "/academy/books/currently-reading"
+          },
+          {
+            "label": "Completed",
+            "href": "/academy/books/completed"
+          }
         ]
       },
       {
-        "header": "Writeups",
+        "header": "Certifications",
         "items": [
-          { "label": "Machines", "href": "/docs/writeups/machines" },
-          { "label": "Challenges", "href": "/docs/writeups/challenges" },
-          { "label": "CTFs", "href": "/docs/writeups/ctfs" }
+          {
+            "label": "In Progress",
+            "href": "/academy/certifications/in-progress"
+          },
+          {
+            "label": "Achieved",
+            "href": "/academy/certifications/achieved"
+          }
         ]
       }
     ],

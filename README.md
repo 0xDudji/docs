@@ -1,14 +1,10 @@
-# Dudji's Hackbook
+# My academy
 
-Personal cybersecurity documentation. Covers attack techniques, tooling, and machine writeups.
+Personal learning documentation focused on books and certifications.
 
 ## Structure
 
-| Section      | Description                                                        |
-| ------------ | ------------------------------------------------------------------ |
-| **Playbook** | Methodology — Recon, Enumeration, Exploitation, Post-Exploitation  |
-| **Attacks**  | Techniques by category — Web, Privilege Escalation                 |
-| **Tech**     | OS internals and fundamentals — Linux                              |
-| **Payloads** | Ready-to-use payloads — Reverse Shells, Web Shells, File Transfers |
-| **Tools**    | Tool references — Nmap, Burp Suite, Metasploit                     |
-| **Writeups** | HTB machines, Challenges, CTFs                                     |
+| Section            | Description                                                  |
+| ------------------ | ------------------------------------------------------------ |
+| **Books**          | Reading tracker for currently reading and completed books    |
+| **Certifications** | Progress tracker for in-progress and achieved certifications |
